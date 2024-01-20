@@ -19,6 +19,7 @@ func (ce CorruptedEventError) Error() string {
 
 type Meeting struct {
 	Id             *uuid.UUID
+	CalendarId     *uuid.UUID
 	CreatedAt      *time.Time
 	ScheduledStart *time.Time
 	ScheduledEnd   *time.Time
@@ -55,6 +56,7 @@ func (c *Meeting) Apply(events []event.Event) error {
 			c.CreatedAt = &e.Timestamp
 			c.ScheduledStart = &createdEvt.ScheduledStart
 			c.ScheduledEnd = &createdEvt.ScheduledEnd
+			c.CalendarId = &createdEvt.CalendarId
 		case event.Canceled:
 			canceledEvt := &event.MeetingCanceled{}
 			err := json.Unmarshal(e.Payload, &canceledEvt)

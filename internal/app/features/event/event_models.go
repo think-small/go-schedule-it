@@ -56,12 +56,17 @@ func (et Type) IsValid() bool {
 }
 
 type MeetingCreated struct {
+	CalendarId     uuid.UUID `json:"calendarId"`
 	ScheduledStart time.Time `json:"scheduledStart"`
 	ScheduledEnd   time.Time `json:"scheduledEnd"`
 	HostId         uuid.UUID `json:"hostId"`
 }
 
 func (c MeetingCreated) IsValid() bool {
+	if c.CalendarId == uuid.Nil {
+		slog.Info("No calendarId provided.")
+		return false
+	}
 	if c.HostId == uuid.Nil {
 		slog.Info("No hostId provided.")
 		return false
