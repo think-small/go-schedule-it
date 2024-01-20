@@ -21,7 +21,7 @@ func Routes(s *Service) http.Handler {
 
 func handleGetAllCalendars(s *Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		w.Write([]byte("Hello, world"))
 	}
 }
 
@@ -29,6 +29,8 @@ func handleGetCalendar(s *Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		var calendar *Calendar
+
+		slog.Debug("Retrieving streamId from query string.")
 
 		rawStreamId := r.URL.Query().Get("calendarId")
 		if rawStreamId == "" {

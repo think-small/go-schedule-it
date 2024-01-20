@@ -2,6 +2,8 @@ package db
 
 import (
 	"github.com/google/uuid"
+	_ "github.com/jackc/pgx"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"go-schedule-it/internal/app/features/event"
 	"go-schedule-it/internal/app/logger"
@@ -30,7 +32,8 @@ func (e EventStreamReader) Read(streamId uuid.UUID) ([]event.Event, error) {
 
 	err := db.Select(events, sql)
 	if err != nil {
-
+		slog.Error("Unable to retrieve events from the database.", slog.String(logger.INNER_ERROR, err.Error()))
+		return nil, err
 	}
 
 	return events, nil

@@ -46,8 +46,8 @@ func Run() {
 	router.Use(middleware.AllowContentType("application/json"))
 	router.Use(middleware.Heartbeat("/health"))
 
-	router.Mount("/calendar", calendar.Routes(calendarService))
-	router.Mount("/calendar/{calendarId}/events", event.Routes(eventService))
+	router.Mount("/calendars", calendar.Routes(calendarService))
+	router.Mount("/calendars/{calendarId}/events", event.Routes(eventService))
 
 	slog.Info(fmt.Sprintf("Starting http server on port: %s\n", cfg.port))
 
