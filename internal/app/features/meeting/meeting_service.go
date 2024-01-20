@@ -1,4 +1,4 @@
-package calendar
+package meeting
 
 import (
 	"github.com/google/uuid"
@@ -15,17 +15,21 @@ func NewCalendarService(sr event.StreamReader) *Service {
 	}
 }
 
-func (s *Service) GetCalendar(streamId uuid.UUID) (*Calendar, error) {
+func (s *Service) GetCalendar(streamId uuid.UUID) (*Meeting, error) {
 	events, err := s.reader.Read(streamId)
 	if err != nil {
 		return nil, err
 	}
 
-	calendar := &Calendar{}
+	calendar := &Meeting{}
 	err = calendar.Apply(events)
 	if err != nil {
 		return nil, err
 	}
 
 	return nil, nil
+}
+
+func (s *Service) RegisterNewCalendar(evt *event.Event) error {
+	return nil
 }

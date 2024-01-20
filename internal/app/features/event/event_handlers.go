@@ -34,7 +34,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 		}
 
 		if eventVM.IsValid() == false {
-			http.Error(w, "Invalid calendar event provided.", http.StatusBadRequest)
+			http.Error(w, "Invalid meeting event provided.", http.StatusBadRequest)
 			return
 		}
 
@@ -56,7 +56,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 			}
 
 			if ec.IsValid() == false {
-				http.Error(w, "Invalid calendar event provided.", http.StatusBadRequest)
+				http.Error(w, "Invalid meeting event provided.", http.StatusBadRequest)
 				return
 			}
 
@@ -65,7 +65,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				slog.Error(
 					"Unable to marshal event payload into valid JSON.",
 					slog.String(logger.INNER_ERROR, err.Error()))
-				http.Error(w, "Unable to add calendar event.", http.StatusInternalServerError)
+				http.Error(w, "Unable to add meeting event.", http.StatusInternalServerError)
 				return
 			}
 			event.Payload = marshaledJson
@@ -77,7 +77,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 
 			err = s.createCalendarEvent(*event)
 			if err != nil {
-				http.Error(w, "Unable to insert calendar event into database.", http.StatusInternalServerError)
+				http.Error(w, "Unable to insert meeting event into database.", http.StatusInternalServerError)
 				return
 			}
 
@@ -88,7 +88,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				slog.Warn(
 					"Unable to decode event payload from request body.",
 					slog.String(logger.INNER_ERROR, err.Error()))
-				http.Error(w, "Unable to add calendar event", http.StatusBadRequest)
+				http.Error(w, "Unable to add meeting event", http.StatusBadRequest)
 				return
 			}
 
@@ -103,7 +103,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				slog.Warn(
 					"Unable to decode event payload from request body.",
 					slog.String(logger.INNER_ERROR, err.Error()))
-				http.Error(w, "Unable to add calendar event", http.StatusBadRequest)
+				http.Error(w, "Unable to add meeting event", http.StatusBadRequest)
 				return
 			}
 
@@ -118,7 +118,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				slog.Warn(
 					"Unable to decode event payload from request body.",
 					slog.String(logger.INNER_ERROR, err.Error()))
-				http.Error(w, "Unable to add calendar event", http.StatusBadRequest)
+				http.Error(w, "Unable to add meeting event", http.StatusBadRequest)
 				return
 			}
 

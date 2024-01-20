@@ -1,4 +1,4 @@
-package calendar
+package meeting
 
 import (
 	"encoding/json"
@@ -14,10 +14,10 @@ type CorruptedEventError struct {
 }
 
 func (ce CorruptedEventError) Error() string {
-	return "Corrupted event found; unable to hydrate calendar."
+	return "Corrupted event found; unable to hydrate meeting."
 }
 
-type Calendar struct {
+type Meeting struct {
 	Id             *uuid.UUID
 	CreatedAt      *time.Time
 	ScheduledStart *time.Time
@@ -30,7 +30,7 @@ type Calendar struct {
 	events         []event.Event
 }
 
-func (c *Calendar) Apply(events []event.Event) error {
+func (c *Meeting) Apply(events []event.Event) error {
 	for _, e := range events {
 		switch e.EventType {
 		case event.Created:
