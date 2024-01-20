@@ -55,7 +55,7 @@ func handleCreateMeeting(s *Service) http.HandlerFunc {
 		createCalendarEvt.EventType = eventVM.EventType
 		createCalendarEvt.Timestamp = time.Now().UTC().Round(time.Microsecond)
 
-		err = s.RegisterNewCalendar(createCalendarEvt)
+		err = s.RegisterNewMeeting(createCalendarEvt)
 		if err != nil {
 
 		}
@@ -65,11 +65,11 @@ func handleCreateMeeting(s *Service) http.HandlerFunc {
 func handleGetMeeting(s *Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
-		var calendar *Meeting
+		var meeting *Meeting
 
 		slog.Debug("Retrieving streamId from query string.")
 
-		rawStreamId := r.URL.Query().Get("calendarId")
+		rawStreamId := r.URL.Query().Get("meetingId")
 		if rawStreamId == "" {
 			slog.Debug("No streamId provided. Unable to hydrate meeting.")
 			http.Error(w, "Unable to retrieve meeting. No streamId provided.", http.StatusBadRequest)
@@ -82,7 +82,7 @@ func handleGetMeeting(s *Service) http.HandlerFunc {
 			return
 		}
 
-		calendar, err = s.GetCalendar(streamId)
+		meeting, err = s.GetMeeting(streamId)
 		if err != nil {
 			var corruptedEventError CorruptedEventError
 			switch {
@@ -95,7 +95,7 @@ func handleGetMeeting(s *Service) http.HandlerFunc {
 			}
 		}
 
-		content, err := json.Marshal(calendar)
+		content, err := json.Marshal(meeting)
 		if err != nil {
 			slog.Error("Unable to serialize meeting.", slog.String(logger.INNER_ERROR, err.Error()))
 			http.Error(w, "Unable to retrieve meeting.", http.StatusInternalServerError)

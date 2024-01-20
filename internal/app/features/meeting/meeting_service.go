@@ -9,13 +9,13 @@ type Service struct {
 	reader event.StreamReader
 }
 
-func NewCalendarService(sr event.StreamReader) *Service {
+func NewMeetingService(sr event.StreamReader) *Service {
 	return &Service{
 		reader: sr,
 	}
 }
 
-func (s *Service) GetCalendar(streamId uuid.UUID) (*Meeting, error) {
+func (s *Service) GetMeeting(streamId uuid.UUID) (*Meeting, error) {
 	events, err := s.reader.Read(streamId)
 	if err != nil {
 		return nil, err
@@ -30,6 +30,6 @@ func (s *Service) GetCalendar(streamId uuid.UUID) (*Meeting, error) {
 	return nil, nil
 }
 
-func (s *Service) RegisterNewCalendar(evt *event.Event) error {
+func (s *Service) RegisterNewMeeting(evt *event.Event) error {
 	return nil
 }
