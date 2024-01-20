@@ -17,19 +17,19 @@ type Service struct {
 	reader *StreamReader
 }
 
-func (s Service) createCalendarEvent(e Event) error {
+func (s Service) createMeeting(e Event) error {
 	return nil
 }
 
-func (s Service) cancelCalendarEvent(e Event) error {
+func (s Service) cancelMeeting(e Event) error {
 	return nil
 }
 
-func (s Service) startCalendarEvent(e Event) error {
+func (s Service) startMeeting(e Event) error {
 	return nil
 }
 
-func (s Service) endCalendarEvent(e Event) error {
+func (s Service) endMeeting(e Event) error {
 	return nil
 }
 

@@ -20,7 +20,7 @@ func Routes(s *Service) http.Handler {
 
 func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var eventVM = &EventVM{}
+		var eventVM = &ViewModel{}
 		var event = &Event{}
 		// TODO - BS - pull calendarId off URL param and verify it matches streamId on event
 
@@ -45,8 +45,8 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 
 		switch eventVM.EventType {
 		case Created:
-			var ec = &CalendarEventCreated{}
-			err = json.Unmarshal([]byte(eventVM.Payload), &ec)
+			var meetingCreated = &MeetingCreated{}
+			err = json.Unmarshal([]byte(eventVM.Payload), &meetingCreated)
 			if err != nil {
 				slog.Warn(
 					"Unable to decode event payload from request body.",
@@ -55,12 +55,12 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				return
 			}
 
-			if ec.IsValid() == false {
+			if meetingCreated.IsValid() == false {
 				http.Error(w, "Invalid meeting event provided.", http.StatusBadRequest)
 				return
 			}
 
-			marshaledJson, err := json.Marshal(ec)
+			marshaledJson, err := json.Marshal(meetingCreated)
 			if err != nil {
 				slog.Error(
 					"Unable to marshal event payload into valid JSON.",
@@ -72,18 +72,18 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 
 			//NOTE - BS - golang's time package has nanosecond precision, but postgres
 			//			  timestamp with time zone data type only has microsecond precision.
-			ec.ScheduledStart.UTC().Round(time.Microsecond)
-			ec.ScheduledEnd.UTC().Round(time.Microsecond)
+			meetingCreated.ScheduledStart.UTC().Round(time.Microsecond)
+			meetingCreated.ScheduledEnd.UTC().Round(time.Microsecond)
 
-			err = s.createCalendarEvent(*event)
+			err = s.createMeeting(*event)
 			if err != nil {
 				http.Error(w, "Unable to insert meeting event into database.", http.StatusInternalServerError)
 				return
 			}
 
 		case Canceled:
-			var ec = &CalendarEventCanceled{}
-			err = json.Unmarshal([]byte(eventVM.Payload), &ec)
+			var meetingCanceled = &MeetingCanceled{}
+			err = json.Unmarshal([]byte(eventVM.Payload), &meetingCanceled)
 			if err != nil {
 				slog.Warn(
 					"Unable to decode event payload from request body.",
@@ -92,13 +92,13 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				return
 			}
 
-			ec.CanceledAt = time.Now().UTC().Round(time.Microsecond)
+			meetingCanceled.CanceledAt = time.Now().UTC().Round(time.Microsecond)
 
-			err = s.cancelCalendarEvent(*event)
+			err = s.cancelMeeting(*event)
 
 		case Started:
-			var es = &CalendarEventStarted{}
-			err = json.Unmarshal([]byte(eventVM.Payload), &es)
+			var meetingStarted = &MeetingStarted{}
+			err = json.Unmarshal([]byte(eventVM.Payload), &meetingStarted)
 			if err != nil {
 				slog.Warn(
 					"Unable to decode event payload from request body.",
@@ -107,13 +107,13 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				return
 			}
 
-			es.ActualStart = time.Now().UTC().Round(time.Microsecond)
+			meetingStarted.ActualStart = time.Now().UTC().Round(time.Microsecond)
 
-			err = s.startCalendarEvent(*event)
+			err = s.startMeeting(*event)
 
 		case Ended:
-			var ee = &CalendarEventEnded{}
-			err = json.Unmarshal([]byte(eventVM.Payload), &ee)
+			var meetingEnded = &MeetingEnded{}
+			err = json.Unmarshal([]byte(eventVM.Payload), &meetingEnded)
 			if err != nil {
 				slog.Warn(
 					"Unable to decode event payload from request body.",
@@ -122,9 +122,9 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 				return
 			}
 
-			ee.ActualEnd = time.Now().Round(time.Microsecond)
+			meetingEnded.ActualEnd = time.Now().Round(time.Microsecond)
 
-			err = s.endCalendarEvent(*event)
+			err = s.endMeeting(*event)
 		}
 	}
 }

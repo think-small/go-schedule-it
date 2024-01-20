@@ -34,7 +34,7 @@ func (c *Meeting) Apply(events []event.Event) error {
 	for _, e := range events {
 		switch e.EventType {
 		case event.Created:
-			createdEvt := &event.CalendarEventCreated{}
+			createdEvt := &event.MeetingCreated{}
 			err := json.Unmarshal(e.Payload, &createdEvt)
 			if err != nil {
 				corruptedEventErr := &CorruptedEventError{
@@ -56,7 +56,7 @@ func (c *Meeting) Apply(events []event.Event) error {
 			c.ScheduledStart = &createdEvt.ScheduledStart
 			c.ScheduledEnd = &createdEvt.ScheduledEnd
 		case event.Canceled:
-			canceledEvt := &event.CalendarEventCanceled{}
+			canceledEvt := &event.MeetingCanceled{}
 			err := json.Unmarshal(e.Payload, &canceledEvt)
 			if err != nil {
 				corruptedEventErr := &CorruptedEventError{event: e}
@@ -66,7 +66,7 @@ func (c *Meeting) Apply(events []event.Event) error {
 
 			c.CanceledAt = &canceledEvt.CanceledAt
 		case event.Started:
-			startedEvt := &event.CalendarEventStarted{}
+			startedEvt := &event.MeetingStarted{}
 			err := json.Unmarshal(e.Payload, &startedEvt)
 			if err != nil {
 				corruptedEventErr := CorruptedEventError{event: e}
@@ -76,7 +76,7 @@ func (c *Meeting) Apply(events []event.Event) error {
 
 			c.ActualStart = &startedEvt.ActualStart
 		case event.Ended:
-			endedEvt := &event.CalendarEventEnded{}
+			endedEvt := &event.MeetingEnded{}
 			err := json.Unmarshal(e.Payload, &endedEvt)
 			if err != nil {
 				corruptedEventErr := CorruptedEventError{event: e}
@@ -86,7 +86,7 @@ func (c *Meeting) Apply(events []event.Event) error {
 
 			c.ActualEnd = &endedEvt.ActualEnd
 		case event.AttendeeRegistered:
-			registeredEvt := &event.CalendarEventAttendeeRegistered{}
+			registeredEvt := &event.MeetingAttendeeRegistered{}
 			err := json.Unmarshal(e.Payload, registeredEvt)
 			if err != nil {
 				corruptedEventErr := CorruptedEventError{event: e}
@@ -109,7 +109,7 @@ func (c *Meeting) Apply(events []event.Event) error {
 
 			c.Attendees = append(c.Attendees, registeredEvt.AttendeeId)
 		case event.AttendeeUnregistered:
-			unregisteredEvt := &event.CalendarEventAttendeeUnregistered{}
+			unregisteredEvt := &event.MeetingAttendeeUnregistered{}
 			err := json.Unmarshal(e.Payload, &unregisteredEvt)
 			if err != nil {
 				corruptedEventErr := &CorruptedEventError{event: e}

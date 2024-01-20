@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-type EventVM struct {
+type ViewModel struct {
 	StreamId  uuid.UUID `json:"streamId"`
-	EventType EventType `json:"eventType"`
+	EventType Type      `json:"eventType"`
 	Payload   json.RawMessage
 }
 
-func (e *EventVM) IsValid() bool {
+func (e *ViewModel) IsValid() bool {
 	if e.StreamId == uuid.Nil {
 		slog.Info("No streamId provided.")
 		return false
@@ -33,16 +33,16 @@ func (e *EventVM) IsValid() bool {
 type Event struct {
 	Id        uuid.UUID       `json:"id"`
 	StreamId  uuid.UUID       `json:"streamId"`
-	EventType EventType       `json:"eventType"`
+	EventType Type            `json:"eventType"`
 	Version   int8            `json:"version"`
 	Timestamp time.Time       `json:"timestamp"`
 	Payload   json.RawMessage `json:"payload"`
 }
 
-type EventType int
+type Type int
 
 const (
-	Unsupported EventType = iota
+	Unsupported Type = iota
 	Created
 	Canceled
 	Started
@@ -51,17 +51,17 @@ const (
 	AttendeeUnregistered
 )
 
-func (et EventType) IsValid() bool {
+func (et Type) IsValid() bool {
 	return et > 0 && et < Ended
 }
 
-type CalendarEventCreated struct {
+type MeetingCreated struct {
 	ScheduledStart time.Time `json:"scheduledStart"`
 	ScheduledEnd   time.Time `json:"scheduledEnd"`
 	HostId         uuid.UUID `json:"hostId"`
 }
 
-func (c CalendarEventCreated) IsValid() bool {
+func (c MeetingCreated) IsValid() bool {
 	if c.HostId == uuid.Nil {
 		slog.Info("No hostId provided.")
 		return false
@@ -82,27 +82,27 @@ func (c CalendarEventCreated) IsValid() bool {
 	return true
 }
 
-type CalendarEventCanceled struct {
+type MeetingCanceled struct {
 	EventId    uuid.UUID `json:"evnetId"`
 	CanceledAt time.Time `json:"canceledAt"`
 }
 
-type CalendarEventStarted struct {
+type MeetingStarted struct {
 	EventId     uuid.UUID `json:"eventId"`
 	ActualStart time.Time `json:"actualStart"`
 }
 
-type CalendarEventEnded struct {
+type MeetingEnded struct {
 	EventId   uuid.UUID `json:"eventId"`
 	ActualEnd time.Time `json:"actualEnd"`
 }
 
-type CalendarEventAttendeeRegistered struct {
+type MeetingAttendeeRegistered struct {
 	EventId    uuid.UUID `json:"eventId"`
 	AttendeeId uuid.UUID `json:"attendeeId"`
 }
 
-type CalendarEventAttendeeUnregistered struct {
+type MeetingAttendeeUnregistered struct {
 	EventId    uuid.UUID `json:"eventId"`
 	AttendeeId uuid.UUID `json:"attendeeId"`
 }

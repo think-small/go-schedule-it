@@ -30,7 +30,7 @@ func handleGetAllMeetings(s *Service) http.HandlerFunc {
 
 func handleCreateMeeting(s *Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var eventVM = &event.EventVM{}
+		var eventVM = &event.ViewModel{}
 		var createCalendarEvt = &event.Event{}
 
 		slog.Debug("Deserializing event data from request body.")
