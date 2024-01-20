@@ -16,7 +16,7 @@ type EventStreamWriter struct {
 
 func (e EventStreamWriter) Write(evt event.Event) error {
 	sql := `
-		INSERT INTO calendar_events (streamid, eventtype, payload)
+		INSERT INTO meeting_events (streamid, eventtype, payload)
 		VALUES ( $1, $2, $3)`
 
 	_, err := db.Exec(sql, evt.StreamId, evt.EventType, evt.Payload)
