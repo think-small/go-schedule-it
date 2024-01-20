@@ -22,6 +22,7 @@ func handleEventCreated(s *Service) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var eventVM = &EventVM{}
 		var event = &Event{}
+		// TODO - BS - pull calendarId off URL param and verify it matches streamId on event
 
 		err := json.NewDecoder(r.Body).Decode(&eventVM)
 		if err != nil {

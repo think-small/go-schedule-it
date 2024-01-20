@@ -14,7 +14,26 @@ type EventStreamReader struct {
 }
 
 func (e EventStreamReader) Read(streamId uuid.UUID) ([]event.Event, error) {
-	return nil, nil
+	var events []event.Event
+	sql := `
+		SELECT
+			id,
+			streamId,
+			eventType,
+			version,
+			timestamp,
+			payload
+		FROM events.calendar_events
+		WHERE streamId = $1
+		ORDER BY version
+	`
+
+	err := db.Select(events, sql)
+	if err != nil {
+
+	}
+
+	return events, nil
 }
 
 func NewEventStreamReader(dbProvider, dbConnStr string) *EventStreamReader {

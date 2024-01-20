@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go-schedule-it/internal/app/db"
+	"go-schedule-it/internal/app/features/calendar"
 	"go-schedule-it/internal/app/features/event"
 	"go-schedule-it/internal/app/logger"
 	"log/slog"
@@ -35,6 +36,7 @@ func Run() {
 	eventStreamWriter := db.NewEventStreamWriter(cfg.dbProvider, cfg.dbConnString)
 	eventStreamReader := db.NewEventStreamReader(cfg.dbProvider, cfg.dbConnString)
 	eventService := event.NewEventService(eventStreamWriter, eventStreamReader)
+	calendarService := calendar.NewCalendarService(eventStreamReader)
 
 	router := chi.NewRouter()
 
@@ -44,7 +46,8 @@ func Run() {
 	router.Use(middleware.AllowContentType("application/json"))
 	router.Use(middleware.Heartbeat("/health"))
 
-	router.Mount("/events", event.Routes(eventService))
+	router.Mount("/calendar", calendar.Routes(calendarService))
+	router.Mount("/calendar/{calendarId}/events", event.Routes(eventService))
 
 	slog.Info(fmt.Sprintf("Starting http server on port: %s\n", cfg.port))
 
