@@ -16,20 +16,23 @@ type RelationshipWriter interface {
 	Write(calendarId uuid.UUID, meetingId uuid.UUID) error
 }
 
-type Service struct {
-	streamReader event.StreamReader
-	relWriter    RelationshipWriter
+type CalendarRepository interface {
+	RegisterNewMeeting(*event.Event) error
+	GetMeetingEvents(uuid.UUID) ([]event.Event, error)
 }
 
-func NewMeetingService(sr event.StreamReader, rw RelationshipWriter) *Service {
+type Service struct {
+	calendarRepository CalendarRepository
+}
+
+func NewMeetingService(calendarRepository CalendarRepository) *Service {
 	return &Service{
-		streamReader: sr,
-		relWriter:    rw,
+		calendarRepository: calendarRepository,
 	}
 }
 
 func (s *Service) GetMeeting(streamId uuid.UUID) (*Meeting, error) {
-	events, err := s.streamReader.Read(streamId)
+	events, err := s.calendarRepository.GetMeetingEvents(streamId)
 	if err != nil {
 		return nil, err
 	}
@@ -64,9 +67,7 @@ func (s *Service) RegisterNewMeeting(evt *event.Event) error {
 		return errors.New("invalid event payload provided. Unable to register new meeting")
 	}
 
-	// TOOD - BS - need to perform insertion into calendar_meetings and meeting_events in a single transaction.
-	//			   need to compose a db repo to combine relWriter and eventStreamWriter
-	err = s.relWriter.Write(eventPayload.CalendarId, evt.StreamId)
+	err = s.calendarRepository.RegisterNewMeeting(evt)
 	if err != nil {
 
 	}

@@ -36,8 +36,17 @@ func Run() {
 	eventStreamWriter := db.NewEventStreamWriter(cfg.dbProvider, cfg.dbConnString)
 	eventStreamReader := db.NewEventStreamReader(cfg.dbProvider, cfg.dbConnString)
 	relWriter := db.NewRelWriter(cfg.dbProvider, cfg.dbConnString)
+	relReader := db.NewReader(cfg.dbProvider, cfg.dbConnString)
+	calendarRepository := db.NewCalendarRepository(
+		cfg.dbProvider,
+		cfg.dbConnString,
+		relWriter,
+		relReader,
+		eventStreamWriter,
+		eventStreamReader)
+
 	eventService := event.NewEventService(eventStreamWriter, eventStreamReader)
-	meetingService := meeting.NewMeetingService(eventStreamReader, relWriter)
+	meetingService := meeting.NewMeetingService(calendarRepository)
 
 	router := chi.NewRouter()
 

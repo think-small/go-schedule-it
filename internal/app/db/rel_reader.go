@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"go-schedule-it/internal/app/logger"
 	"log/slog"
+	"os"
 )
 
 type RelReader struct {
@@ -18,7 +19,7 @@ func (r RelReader) Read(calendarId uuid.UUID) ([]uuid.UUID, error) {
 		SELECT
 			calendarId,
 			meetingId
-		FROM calendar_meetings
+		FROM joins.calendar_meetings
 		WHERE calendarId = $1
 	`
 	err := r.db.Select(meetings, sql, calendarId)
@@ -28,4 +29,20 @@ func (r RelReader) Read(calendarId uuid.UUID) ([]uuid.UUID, error) {
 	}
 
 	return meetings, nil
+}
+
+func NewReader(dbProvider, dbConnStr string) *RelReader {
+	if db == nil {
+		database, err := sqlx.Connect(dbProvider, dbConnStr)
+		if err != nil {
+			slog.Error("Unable to connect to database.", slog.String(logger.INNER_ERROR, err.Error()))
+			os.Exit(1)
+		}
+
+		db = database
+	}
+
+	return &RelReader{
+		db: db,
+	}
 }
