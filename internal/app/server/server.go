@@ -35,8 +35,9 @@ func Run() {
 
 	eventStreamWriter := db.NewEventStreamWriter(cfg.dbProvider, cfg.dbConnString)
 	eventStreamReader := db.NewEventStreamReader(cfg.dbProvider, cfg.dbConnString)
+	relWriter := db.NewRelWriter(cfg.dbProvider, cfg.dbConnString)
 	eventService := event.NewEventService(eventStreamWriter, eventStreamReader)
-	calendarService := meeting.NewMeetingService(eventStreamReader)
+	meetingService := meeting.NewMeetingService(eventStreamReader, relWriter)
 
 	router := chi.NewRouter()
 
@@ -46,7 +47,7 @@ func Run() {
 	router.Use(middleware.AllowContentType("application/json"))
 	router.Use(middleware.Heartbeat("/health"))
 
-	router.Mount("/calendars/{calendarId}/meetings", meeting.Routes(calendarService))
+	router.Mount("/calendars/{calendarId}/meetings", meeting.Routes(meetingService))
 	router.Mount("/calendars/{calendarId}/meetings/{meetingId}/events", event.Routes(eventService))
 
 	slog.Info(fmt.Sprintf("Starting http server on port: %s\n", cfg.port))

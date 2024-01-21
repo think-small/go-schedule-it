@@ -17,6 +17,14 @@ func (ce CorruptedEventError) Error() string {
 	return "Corrupted event found; unable to hydrate meeting."
 }
 
+type InvalidEventTypeError struct {
+	event event.Event
+}
+
+func (ie InvalidEventTypeError) Error() string {
+	return "Invalid event type was provided. Unable to register new meeting."
+}
+
 type Meeting struct {
 	Id             *uuid.UUID
 	CalendarId     *uuid.UUID
